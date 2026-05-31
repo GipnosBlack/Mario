@@ -1,3 +1,7 @@
+Ôªøusing Mario1.GameObject.Gameobject;
+using Mario1.GameObject.Gameobject.Creature;
+using System.Diagnostics;
+
 namespace Mario1
 {
     public partial class Form1 : Form
@@ -6,9 +10,15 @@ namespace Mario1
         int screenHeight = Screen.PrimaryScreen.Bounds.Height;
         private Button btnStart;
 
-        private int spawn;//ÓÚ‚Â˜‡ÂÚ ÍÓ„‰‡ ÒÔ‡‚ÌËÚ¸ ˜ÚÓ ÎË·Ó
+        private Stopwatch _sw = Stopwatch.StartNew();
+        private double _deltaTime;
+        private double _timeScale;
+
+
+        private Image[] _digitImages = new Image[10];
+        private int spawn;//–æ—Ç–≤–µ—á–∞–µ—Ç –∫–æ–≥–¥–∞ —Å–ø–∞–≤–Ω–∏—Ç—å —á—Ç–æ –ª–∏–±–æ
         public int lives;
-        private List<Creature> Òreatures;
+        private List<Creature> creatures;
         private List<Block> blocks;
         private List<Background> backgrounds;
         private Mario mario;
@@ -16,17 +26,17 @@ namespace Mario1
         internal void StopGameTimer() => gameTimer.Stop();
         internal void StartGameTimer() => gameTimer.Start();
 
-        // √„Î‡‚Ì˚È Ë„Ó‚ÓÈ Ú‡ÈÏÂ
+        // –ì–≥–ª–∞–≤–Ω—ã–π –∏–≥—Ä–æ–≤–æ–π —Ç–∞–π–º–µ—Ä
         private System.Windows.Forms.Timer gameTimer;
 
         public Form1()
         {
             InitializeComponent();
-            // Õ‡ÒÚÓÈÍ‡ ÙÓÏ˚ ‰Îˇ ÔÓËÁ‚Ó‰ËÚÂÎ¸ÌÓÈ ÓÚËÒÓ‚ÍË (Double buffering)
+            // –ù–∞—Å—Ç—Ä–æ–π–∫–∞ —Ñ–æ—Ä–º—ã –¥–ª—è –ø—Ä–æ–∏–∑–≤–æ–¥–∏—Ç–µ–ª—å–Ω–æ–π –æ—Ç—Ä–∏—Å–æ–≤–∫–∏ (Double buffering)
             this.SetStyle(ControlStyles.UserPaint | ControlStyles.AllPaintingInWmPaint | ControlStyles.OptimizedDoubleBuffer, true);
-            KeyPreview = true; // œÓÁ‚ÓÎˇÂÚ ÙÓÏÂ ÔÂÂı‚‡Ú˚‚‡Ú¸ ÒÓ·˚ÚËˇ ÍÎ‡‚Ë‡ÚÛ˚
+            KeyPreview = true; // –ü–æ–∑–≤–æ–ª—è–µ—Ç —Ñ–æ—Ä–º–µ –ø–µ—Ä–µ—Ö–≤–∞—Ç—ã–≤–∞—Ç—å —Å–æ–±—ã—Ç–∏—è –∫–ª–∞–≤–∏–∞—Ç—É—Ä—ã
             gameTimer = new System.Windows.Forms.Timer();
-            gameTimer.Interval = 5;
+            gameTimer.Interval = 10;
             gameTimer.Tick += GameTimer_Tick;
             if (screenWidth == 0) screenWidth = 2000;
         }
@@ -56,50 +66,73 @@ namespace Mario1
 
         private void GameStart()
         {
+            _digitImages[0] = Properties.Resources.num_0;
+            _digitImages[1] = Properties.Resources.num_1;
+            _digitImages[2] = Properties.Resources.num_2;
+            _digitImages[3] = Properties.Resources.num_3;
+            _digitImages[4] = Properties.Resources.num_4;
+            _digitImages[5] = Properties.Resources.num_5;
+            _digitImages[6] = Properties.Resources.num_6;
+            _digitImages[7] = Properties.Resources.num_7;
+            _digitImages[8] = Properties.Resources.num_8;
+            _digitImages[9] = Properties.Resources.num_9;
             spawn = 0;
             lives = 3;
-            Òreatures = new List<Creature>();
+            creatures = new List<Creature>();
             blocks = new List<Block>();
             backgrounds = new List<Background>();
             nav = new Navigator();
-            mario = new Mario(0, 700, nav.base_height_ordinary("ordinary"), nav.base_width_ordinary);
-            BackColor = Color.DodgerBlue;
+            mario = new Mario(100, 700, nav.base_height_ordinary("ordinary"), nav.base_width_ordinary);
             Spawn_Load();
             gameTimer.Start();
         }
 
-        // √Î‡‚Ì˚È Ë„Ó‚ÓÈ ˆËÍÎ
+
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            AnimationManager.Clean();
+
+            // –¢–∞–π–º–µ—Ä
+            if (gameTimer != null)
+            {
+                gameTimer?.Stop();
+                gameTimer?.Dispose();
+            }
+        }
+
+        // –ì–ª–∞–≤–Ω—ã–π –∏–≥—Ä–æ–≤–æ–π —Ü–∏–∫–ª
         public void GameTimer_Tick(object sender, EventArgs e)
         {
+            Stabilization_Time();
             if (!AnimationManager.IsAnimating)
             {
                 Left_Mario();
-                Right_Mario();
+                Right_Mario(false);
                 Sliding_Mario();
-                Jamp_Mario();
+                Jump_Mario();
                 Padenie_Mario();
-                Actions();
             }
-            for (short i = 0; i < Òreatures.Count; i++)
+            Actions();
+            for (short i = 0; i < creatures.Count; i++)
             {
-                if (Òreatures[i].Animation(metod: "", triger: 70) & Òreatures[i].condition.Find(x => x == "intangible") == "intangible")
-                    { Òreatures.RemoveAt(i--); if (i == -1) break; }
-                i = Jump_Òreatures(i);
+                if (creatures[i].Animation(metod: "", triger: 70) & creatures[i].State.HasFlag(CreatureState.Intangible) & creatures[i].name == "Image_Goomba")
+                    { creatures.RemoveAt(i--); if (i == -1) break; }
+                i = Jump_—Åreatures(i);
                 if (i == -1) break;
-                i = Fall_Òreatures(i);
+                i = Fall_—Åreatures(i);
                 if (i == -1) break;
                 i = Creatures_come_out(i);
                 if (i == -1) break;
                 i = Movement_creatures_X(i);
                 if (i == -1) break;
-                if (Òreatures[i].X < -200)
+                if (creatures[i].X < -200)
                 {
-                    blocks = Òreatures[i].Check_block_we_stand(blocks, i, "dead");
-                    Òreatures.RemoveAt(i--);
+                    creatures.RemoveAt(i--);
                     if (i == -1) break;
                 }
                 
             }
+            –°hecking_blocks();
             mario.Intangible_Mario();
             if (mario.pause_atack_fire_bar > 0) mario.pause_atack_fire_bar -= 1;
             this.Invalidate();
@@ -109,17 +142,17 @@ namespace Mario1
         private void Form1_Paint(object sender, PaintEventArgs e)
         {
             if (mario is null) return;
-            for (int i = backgrounds.Count - 1; i >= 0; i--)
+            for (int i = 0; i < backgrounds.Count; i++)
             {
-                if (backgrounds[i].X > 0 - backgrounds[i].width & backgrounds[i].X < screenWidth)
+                if (backgrounds[i].X > -500 & backgrounds[i].X < screenWidth)
                 e.Graphics.DrawImage(backgrounds[i].image, backgrounds[i].X, backgrounds[i].Y);
             }
-            for (int i = Òreatures.Count - 1; i >= 0; i--)
+            for (int i = creatures.Count - 1; i >= 0; i--)
             {
-                if (Òreatures[i].X > 0 - Òreatures[i].width & Òreatures[i].X < screenWidth)
+                if (creatures[i].X > 0 - creatures[i].width & creatures[i].X < screenWidth)
                 {
-                    if (Òreatures[i].height <= Òreatures[i].proper_height) e.Graphics.DrawImage(Òreatures[i].image, Òreatures[i].X, Òreatures[i].Y, Òreatures[i].DestRect(), GraphicsUnit.Pixel);
-                    else e.Graphics.DrawImage(Òreatures[i].image, Òreatures[i].X, Òreatures[i].Y);
+                    if (creatures[i].height <= creatures[i].proper_height) e.Graphics.DrawImage(creatures[i].image, creatures[i].X, creatures[i].Y, creatures[i].DestRect(), GraphicsUnit.Pixel);
+                    else e.Graphics.DrawImage(creatures[i].image, creatures[i].X, creatures[i].Y);
                 }
             }
             if (mario.image is not null)
@@ -149,6 +182,45 @@ namespace Mario1
                     }
                 }
             }
+            DrawCoinCounter(e);
+        }
+
+        private void DrawCoinCounter(PaintEventArgs e)
+        {
+            if (mario == null || _digitImages[0] == null) return;
+
+            int coins = mario.coin;
+            // D3 -> 000, 005, 099 | D2 -> 00, 05, 99 (—Ñ–æ—Ä–º–∞—Ç)
+            string coinStr = coins.ToString("D2");
+
+            // –ù–∞—Å—Ç—Ä–æ–π–∫–∏ –ø–æ–∑–∏—Ü–∏–∏ –∏ —Ä–∞–∑–º–µ—Ä–∞
+            int startX = screenWidth - 270; 
+            int startY = 15;                
+            int digitWidth = 70;            
+            int digitHeight = 70;           
+            int spacing = 10;                     // –†–∞—Å—Å—Ç–æ—è–Ω–∏–µ –º–µ–∂–¥—É —Ü–∏—Ñ—Ä–∞–º–∏
+            
+            int currentX = startX;
+            if (coins == 0) 
+            { }
+            e.Graphics.DrawImage(Properties.Resources.Coin, currentX, startY, digitWidth, digitHeight);
+            currentX += digitWidth + spacing + 7;
+            foreach (char c in coinStr)
+            {
+                int digit = c - '0'; // –ü—Ä–µ–æ–±—Ä–∞–∑—É–µ–º —Å–∏–º–≤–æ–ª '0'..'9' –≤ —á–∏—Å–ª–æ 0..9
+                if (_digitImages[digit] != null)
+                {
+                    e.Graphics.DrawImage(_digitImages[digit], currentX, startY, digitWidth, digitHeight);
+                    currentX += digitWidth + spacing;
+                }
+            }
+        }
+
+        private void Stabilization_Time()
+        {
+            _deltaTime = _sw.Elapsed.TotalMilliseconds; //–ó–∞–º–µ—Ä—è–µ–º, —Å–∫–æ–ª—å–∫–æ —Ä–µ–∞–ª—å–Ω–æ–≥–æ –≤—Ä–µ–º–µ–Ω–∏ –ø—Ä–æ—à–ª–æ —Å –ø—Ä–æ—à–ª–æ–≥–æ –∫–∞–¥—Ä–∞
+            _sw.Restart();                              //–ú–≥–Ω–æ–≤–µ–Ω–Ω–æ –æ–±–Ω—É–ª—è–µ–º —Ç–∞–π–º–µ—Ä –∏ –∑–∞–ø—É—Å–∫–∞–µ–º –∑–∞–Ω–æ–≤–æ
+            _timeScale = Math.Clamp(_deltaTime / 16.67, 0.5, 2.0);
         }
 
         private void Left_Mario()
@@ -157,22 +229,23 @@ namespace Mario1
             {
                 if (mario.X > 0)
                 {
-                    for (short y = 0; y < mario.speed; y++)
+                    int moveStep = (int)(mario.speed * _timeScale);
+                    for (short y = 0; y < moveStep; y++)
                     {
                         mario.X--;
-                        for (short i = 0; i < Òreatures.Count; i++)
+                        for (short i = 0; i < creatures.Count; i++)
                         {
-                            if (mario.mode != "intangible ordinary" & !mario.deadPadeniye & Òreatures[i].property != "Attack against creatures" & Òreatures[i].condition.Find(x => x == "dead_fall") != "dead_fall" & Òreatures[i].condition.Find(x => x == "intangible") != "intangible")
+                            if (mario.mode != "intangible ordinary" & !mario.deadPadeniye & creatures[i].property != "Attack against creatures" & !creatures[i].State.HasFlag(CreatureState.DeadFall) & !creatures[i].State.HasFlag(CreatureState.Intangible))
                             {
-                                if (—heck(new int[] { mario.X, mario.X + mario.width, mario.Y, mario.Y + mario.height }, new int[] { Òreatures[i].X, Òreatures[i].X + Òreatures[i].width, Òreatures[i].Y, Òreatures[i].Y + Òreatures[i].height }) == true)
+                                if (–°heck(new int[] { mario.X, mario.X + mario.width, mario.Y, mario.Y + mario.height }, new int[] { creatures[i].X, creatures[i].X + creatures[i].width, creatures[i].Y, creatures[i].Y + creatures[i].height }) == true)
                                 {
-                                    i = Mario_in_Òreatures(i);
+                                    i = Mario_in_—Åreatures(i);
                                 }
                             }
                         }
                         for (short i = 0; i < blocks.Count; i++)
                         {
-                            if (—heck(new int[] { mario.X, mario.X + mario.width, mario.Y, mario.Y + mario.height }, new int[] { blocks[i].X, blocks[i].X + blocks[i].width, blocks[i].Y, blocks[i].Y + blocks[i].height }))
+                            if (–°heck(new int[] { mario.X, mario.X + mario.width, mario.Y, mario.Y + mario.height }, new int[] { blocks[i].X, blocks[i].X + blocks[i].width, blocks[i].Y, blocks[i].Y + blocks[i].height }))
                             {
                                 mario.TimerSliding = false;
                                 mario.TimerLeft = false;
@@ -191,10 +264,9 @@ namespace Mario1
                         else mario.speed += 2;
                     }
                     else if (mario.run_animation % 5 == 0 & mario.speed > mario.max_speed & !mario.TimerSliding) mario.speed--;
-                    if (mario.Y + mario.height == mario.top & !mario.braking2 & !mario.sits)
-                    {
-                        mario.Defines_the_image("Walk");
-                    }
+                    if (mario.we_stand != -1)
+                        if (mario.Y + mario.height == blocks[mario.we_stand].Y & !mario.braking2 & !mario.sits)
+                            mario.Defines_the_image("Walk");
                     mario.run_animation += 1;
                 }
                 else
@@ -208,77 +280,99 @@ namespace Mario1
             }
         }
 
-        private void Right_Mario()
+        private void Right_Mario(bool intangible_block)
         {
-
             if (mario.TimerRight)
             {
                 if (mario.X < screenWidth / 2 - screenWidth / 10 || spawn + screenWidth > nav.end_location_X)
                 {
                     if (mario.X + mario.width < screenWidth)
                     {
-                        for (short y = 0; y < mario.speed; y++)
+                        int moveStep = (int)(mario.speed * _timeScale);
+                        for (short y = 0; y < moveStep; y++)
                         {
                             mario.X++;
-                            for (short i = 0; i < Òreatures.Count; i++)
+                            if (!intangible_block)
                             {
-                                if (mario.mode != "intangible ordinary" & !mario.deadPadeniye & Òreatures[i].property != "Attack against creatures" & Òreatures[i].condition.Find(x => x == "dead_fall") != "dead_fall" & Òreatures[i].condition.Find(x => x == "intangible") != "intangible")
+                                for (short i = 0; i < creatures.Count; i++)
                                 {
-                                    if (—heck(new int[] { mario.X, mario.X + mario.width, mario.Y, mario.Y + mario.height }, new int[] { Òreatures[i].X, Òreatures[i].X + Òreatures[i].width, Òreatures[i].Y, Òreatures[i].Y + Òreatures[i].height }) == true)
+                                    if (mario.mode != "intangible ordinary" & !mario.deadPadeniye & creatures[i].property != "Attack against creatures" & !creatures[i].State.HasFlag(CreatureState.DeadFall) & !creatures[i].State.HasFlag(CreatureState.Intangible))
                                     {
-                                        i = Mario_in_Òreatures(i);
+                                        if (–°heck(new int[] { mario.X, mario.X + mario.width, mario.Y, mario.Y + mario.height }, new int[] { creatures[i].X, creatures[i].X + creatures[i].width, creatures[i].Y, creatures[i].Y + creatures[i].height }) == true)
+                                        {
+                                            i = Mario_in_—Åreatures(i);
+                                        }
                                     }
                                 }
-                            }
-                            for (short i = 0; i < blocks.Count; i++)
-                            {
-                                if (—heck(new int[] { mario.X, mario.X + mario.width, mario.Y, mario.Y + mario.height }, new int[] { blocks[i].X, blocks[i].X + blocks[i].width, blocks[i].Y, blocks[i].Y + blocks[i].height }) == true)
+                                for (short i = 0; i < blocks.Count; i++)
                                 {
-                                    if (blocks[i].property == "return_between_locations")
+                                    if (–°heck(new int[] { mario.X, mario.X + mario.width, mario.Y, mario.Y + mario.height }, new int[] { blocks[i].X, blocks[i].X + blocks[i].width, blocks[i].Y, blocks[i].Y + blocks[i].height }) == true)
                                     {
-                                        Switching_return_between_locations(return_location: blocks[i].location_transfer);
-                                        return;
-                                    }
-                                    else if (blocks[i].property == "between_locations" & blocks[i].name == "Column")
-                                    {
-                                        mario.block_we_stand = i - 1; //ÚÓ ÂÒÚ¸ ·ÎÓÍ Ì‡ ÍÓÚÓÓÏ ÒÚÓËÚ Column
-                                        mario.TimerLeft = false;
-                                        mario.TimerRight = false;
-                                        mario.TimerGravity = false;
+                                        if (blocks[i].property == "between_locations" & blocks[i].name == "Column")
+                                        {
+                                            mario.we_stand = i - 1; //—Ç–æ –µ—Å—Ç—å –±–ª–æ–∫ –Ω–∞ –∫–æ—Ç–æ—Ä–æ–º —Å—Ç–æ–∏—Ç Column
+                                            mario.TimerLeft = false;
+                                            mario.TimerRight = false;
+                                            mario.TimerGravity = false;
+                                            mario.TimerSliding = false;
+                                            mario.TimerSpace = false;
+                                            mario.g = 1;
+                                            mario.spaceG_max = 15;
+                                            mario.spaceG = 20;
+                                            mario.stopForm1_KeyDown = true;
+                                            mario.run_animation = 0;
+                                            mario.speed = 1;
+                                            AnimationManager.PlayAnimation(
+                                                durationMs: 2000,
+                                                intervalMs: 5,
+                                                onFrame: frame =>
+                                                {
+                                                    Anim_finish("Column", i);
+                                                },
+                                                onComplete: () =>
+                                                {
+                                                    Switching_between_locations(i);
+                                                }
+                                            );
+                                            return;
+                                        }
+                                        else if ((blocks[i].property == "between_locations" || blocks[i].property == "return_between_locations") & blocks[i].name == "90Pipe_input" & mario.Y > blocks[i].Y)
+                                        {
+                                            mario.TimerLeft = false;
+                                            mario.TimerRight = true;
+                                            mario.TimerGravity = false;
+                                            mario.TimerSliding = false;
+                                            mario.TimerSpace = false;
+                                            mario.g = 1;
+                                            mario.spaceG_max = 15;
+                                            mario.spaceG = 20;
+                                            mario.stopForm1_KeyDown = true;
+                                            AnimationManager.PlayAnimation(
+                                                durationMs: 500,      // 0.8 —Å–µ–∫—É–Ω–¥—ã
+                                                intervalMs: 5,
+                                                onFrame: frame =>
+                                                {
+                                                    // –õ–æ–≥–∏–∫–∞ –∞–Ω–∏–º–∞—Ü–∏–∏ (–∫–∞–∂–¥—ã–π —Ç–∏–∫ —Ç–∞–π–º–µ—Ä–∞)
+                                                    Anim_finish("90Pipe_input", i);
+                                                },
+                                                onComplete: () =>
+                                                {
+                                                    if (blocks[i].property == "between_locations")
+                                                        Switching_between_locations(i);
+                                                    else
+                                                        Switching_return_between_locations(return_location: blocks[i].location_transfer);
+                                                }
+                                            );
+                                            return;
+                                        }
                                         mario.TimerSliding = false;
-                                        mario.TimerSpace = false;
-                                        mario.g = 1;
-                                        mario.spaceG_max = 15;
-                                        mario.spaceG = 20;
-                                        mario.stopForm1_KeyDown = true;
+                                        mario.TimerRight = false;
+                                        mario.X = blocks[i].X - mario.width;
                                         mario.run_animation = 0;
+                                        if (!mario.sits) mario.Defines_the_image("Mario/Super Mario/Fiery Mario");
                                         mario.speed = 1;
-                                        AnimationManager.PlayAnimation(
-                                            durationMs: 2000,      // 0.8 ÒÂÍÛÌ‰˚
-                                            intervalMs: 5,
-                                            onFrame: frame =>
-                                            {
-                                                // ÀÓ„ËÍ‡ ‡ÌËÏ‡ˆËË (Í‡Ê‰˚È ÚËÍ Ú‡ÈÏÂ‡)
-                                                Anim_finish();
-                                            },
-                                            onComplete: () =>
-                                            {
-                                                Switching_between_locations(i);
-                                            }
-                                        );
                                         return;
                                     }
-                                    else if (blocks[i].property == "between_locations" & blocks[i].name == "Pipe90")
-                                    {
-
-                                    }
-                                    mario.TimerSliding = false;
-                                    mario.TimerRight = false;
-                                    mario.X = blocks[i].X - mario.width;
-                                    mario.run_animation = 0;
-                                    if (!mario.sits) mario.Defines_the_image("Mario/Super Mario/Fiery Mario");
-                                    mario.speed = 1;
-                                    return;
                                 }
                             }
                             if (Paday_Mario(true)) break;
@@ -289,10 +383,9 @@ namespace Mario1
                             else mario.speed += 2;
                         }
                         else if (mario.run_animation % 5 == 0 & mario.speed > mario.max_speed & !mario.TimerSliding) mario.speed--;
-                        if (mario.Y + mario.height == mario.top & !mario.braking2 & !mario.sits)
-                        {
-                            mario.Defines_the_image("Walk");
-                        }
+                        if (mario.we_stand != -1)
+                            if (mario.Y + mario.height == blocks[mario.we_stand].Y & !mario.braking2 & !mario.sits)
+                                mario.Defines_the_image("Walk");
                     }
                     else
                     {
@@ -305,11 +398,12 @@ namespace Mario1
                 }
                 else
                 {
-                    for (short y = 0; y < mario.speed; y++)
+                    int moveStep = (int)(mario.speed * _timeScale);
+                    for (short y = 0; y < moveStep; y++)
                     {
                         for (short i = 0; i < blocks.Count; i++)
                         {
-                            if (—heck(new int[] { mario.X, mario.X + mario.width + 1, mario.Y, mario.Y + mario.height }, new int[] { blocks[i].X, blocks[i].X + blocks[i].width, blocks[i].Y, blocks[i].Y + blocks[i].height }) == true)
+                            if (–°heck(new int[] { mario.X, mario.X + mario.width + 1, mario.Y, mario.Y + mario.height }, new int[] { blocks[i].X, blocks[i].X + blocks[i].width, blocks[i].Y, blocks[i].Y + blocks[i].height }) == true)
                             {
                                 if (blocks[i].property == "return_between_locations")
                                 {
@@ -341,25 +435,26 @@ namespace Mario1
                                     if (mario.nam[r] == i) mario.nam.RemoveAt(r--);
                                     else if (mario.nam[r] > i) mario.nam[r]--;
                                 }
-                                if (mario.block_we_stand > i) mario.block_we_stand--;
+                                creatures = blocks[i].Check_—Åreature_we_stand(creatures, i);
+                                if (mario.we_stand > i) mario.we_stand--;
                                 i--;
                             }
                         }
-                        for (short i = 0; i < Òreatures.Count; i++)
+                        for (short i = 0; i < creatures.Count; i++)
                         {
-                            if (mario.mode != "intangible ordinary" & Òreatures[i].property != "Attack against creatures" & !mario.deadPadeniye & Òreatures[i].condition.Find(x => x == "dead_fall") != "dead_fall" & Òreatures[i].condition.Find(x => x == "intangible") != "intangible")
+                            if (mario.mode != "intangible ordinary" & creatures[i].property != "Attack against creatures" & !mario.deadPadeniye & !creatures[i].State.HasFlag(CreatureState.DeadFall) & !creatures[i].State.HasFlag(CreatureState.Intangible))
                             {
-                                if (—heck(new int[] { mario.X, mario.X + mario.width, mario.Y, mario.Y + mario.height }, new int[] { Òreatures[i].X, Òreatures[i].X + Òreatures[i].width, Òreatures[i].Y, Òreatures[i].Y + Òreatures[i].height }) == true)
+                                if (–°heck(new int[] { mario.X, mario.X + mario.width, mario.Y, mario.Y + mario.height }, new int[] { creatures[i].X, creatures[i].X + creatures[i].width, creatures[i].Y, creatures[i].Y + creatures[i].height }) == true)
                                 {
-                                    i = Mario_in_Òreatures(i);
+                                    i = Mario_in_—Åreatures(i);
                                 }
                             }
                         }
-                        for (short i = 0; i < Òreatures.Count; i++) Òreatures[i].X--;
+                        for (short i = 0; i < creatures.Count; i++) creatures[i].X--;
                         for (short i = 0; i < backgrounds.Count; i++) backgrounds[i].X--;
-                        if (Paday_Mario(true)) break;
                         spawn++;
                         Spawn_Load();
+                        if (Paday_Mario(true)) break;
                     }
                     if (mario.run_animation % 5 == 0 & mario.speed < mario.max_speed & !mario.TimerSliding)
                     {
@@ -367,15 +462,14 @@ namespace Mario1
                         else mario.speed += 2;
                     }
                     else if (mario.run_animation % 5 == 0 & mario.speed > mario.max_speed & !mario.TimerSliding) mario.speed--;
-                    if (mario.Y + mario.height == mario.top & !mario.braking2 & !mario.sits)
-                    {
-                        mario.Defines_the_image("Walk");
-                    }
+                    if (mario.we_stand != -1)
+                        if (mario.Y + mario.height == blocks[mario.we_stand].Y & !mario.braking2 & !mario.sits)
+                            mario.Defines_the_image("Walk");
                 }
                 mario.run_animation += 1;
             }
         }
-
+        
         private void Sliding_Mario()
         {
             if (mario.TimerSliding)
@@ -411,7 +505,7 @@ namespace Mario1
             }
         }
 
-        private void Jamp_Mario()
+        private void Jump_Mario()
         {
             if (mario.TimerSpace)
             {
@@ -419,25 +513,55 @@ namespace Mario1
                 {
                     if (!mario.deadPadeniye)
                     {
-                        mario.block_we_stand = -1;
-                        mario.top = 3000;
-                        mario.Y -= mario.spaceG;
+                        mario.we_stand = -1;
+                        mario.Y -= (int)(mario.spaceG * _timeScale);
                         if (mario.spaceG_max != 0) mario.spaceG_max--;
                         for (int i = 0; i < blocks.Count; i++)
                         {
-                            if (—heck(new int[] { mario.X, mario.X + mario.width, mario.Y, mario.Y + mario.height }, new int[] { blocks[i].X, blocks[i].X + blocks[i].width, blocks[i].Y, blocks[i].Y + blocks[i].height }))
+                            if (–°heck(new int[] { mario.X, mario.X + mario.width, mario.Y, mario.Y + mario.height }, new int[] { blocks[i].X, blocks[i].X + blocks[i].width, blocks[i].Y, blocks[i].Y + blocks[i].height }))
                             {
+                                bool flag = false;
                                 int sravnenieTverdoeCosanieL = blocks[i].X + blocks[i].width - mario.X;
                                 for (int m = i + 1; m < blocks.Count; m++)
                                 {
-                                    if (—heck(new int[] { mario.X, mario.X + mario.width, mario.Y, mario.Y + mario.height }, new int[] { blocks[m].X, blocks[m].X + blocks[m].width, blocks[m].Y, blocks[m].Y + blocks[m].height }))
+                                    if (–°heck(new int[] { mario.X, mario.X + mario.width, mario.Y, mario.Y + mario.height }, new int[] { blocks[m].X, blocks[m].X + blocks[m].width, blocks[m].Y, blocks[m].Y + blocks[m].height }))
                                     {
                                         int sravnenieTverdoeCosanieR = mario.X + mario.width - blocks[m].X;
                                         if (sravnenieTverdoeCosanieR > sravnenieTverdoeCosanieL)
                                         {
                                             i = m;
                                         }
+                                        flag = true;
                                         break;
+                                    }
+                                }
+                                if (!flag)
+                                {
+                                    int width = 30;
+                                    bool flag2 = false;
+                                    if (!mario.TimerRight & mario.X + mario.width > blocks[i].X & mario.X + mario.width < blocks[i].X + width) 
+                                        { flag2 = true; flag = true; }
+                                    else if (!mario.TimerLeft & mario.X < blocks[i].X + blocks[i].width & mario.X > blocks[i].X + blocks[i].width - width) 
+                                        { flag2 = false; flag = true; }
+                                    bool flag3 = false;
+                                    for (int m = 0; m < blocks.Count; m++)
+                                    {
+                                        if (!flag) { flag3 = true; break; }
+                                        if (m == i) continue;
+                                        if (blocks[m].Y == blocks[i].Y & 
+                                            (
+                                                (flag2 & blocks[m].X < blocks[i].X & blocks[m].X + blocks[m].width > blocks[i].X - mario.width) 
+                                                ||
+                                                (!flag2 & blocks[m].X > blocks[i].X & blocks[m].X < blocks[i].X + blocks[i].width + mario.width)
+                                            )
+                                        )
+                                            { flag3 = true; break; }
+                                    }
+                                    if (!flag3)
+                                    {
+                                        if (flag2) mario.X = blocks[i].X - mario.width;
+                                        else mario.X = blocks[i].X + blocks[i].width;
+                                        return;
                                     }
                                 }
                                 int t = proverka_sovp_dvuh_perem_spiskov(i);
@@ -477,18 +601,17 @@ namespace Mario1
             {
                 if (mario.Y + mario.height < mario.top)
                 {
-                    mario.Y += mario.g;
+                    mario.Y += (int)(mario.g * _timeScale);
                     mario.g++;
                     if (!mario.deadPadeniye)
                     {
                         for (short i = 0; i < blocks.Count; i++)
                         {
-                            if (—heck(new int[] { mario.X, mario.X + mario.width, mario.Y, mario.Y + mario.height }, new int[] { blocks[i].X, blocks[i].X + blocks[i].width, blocks[i].Y, blocks[i].Y + blocks[i].height }))
+                            if (–°heck(new int[] { mario.X, mario.X + mario.width, mario.Y, mario.Y + mario.height }, new int[] { blocks[i].X, blocks[i].X + blocks[i].width, blocks[i].Y, blocks[i].Y + blocks[i].height }))
                             {
                                 mario.Y = (blocks[i].Y - (mario.Y + mario.height - mario.Y));
                                 mario.g = 1;
-                                mario.top = blocks[i].Y;
-                                mario.block_we_stand = i;
+                                mario.we_stand = i;
                                 mario.TimerGravity = false;
                                 if (mario.sits) mario.Defines_the_image("Duck");
                                 else mario.Defines_the_image("Mario/Super Mario/Fiery Mario");
@@ -496,20 +619,15 @@ namespace Mario1
                         }
                         if (mario.mode != "intangible ordinary")
                         {
-                            for (short i = 0; i < Òreatures.Count; i++)
+                            for (short i = 0; i < creatures.Count; i++)
                             {
-                                if (Òreatures[i].condition.Find(x => x == "dead_fall") == "dead_fall" || Òreatures[i].condition.Find(x => x == "intangible") == "intangible") continue;
-                                if (—heck(new int[] { mario.X, mario.X + mario.width, mario.Y, mario.Y + mario.height }, new int[] { Òreatures[i].X, Òreatures[i].X + Òreatures[i].width, Òreatures[i].Y, Òreatures[i].Y + Òreatures[i].height }))
+                                if (creatures[i].State.HasFlag(CreatureState.DeadFall) || creatures[i].State.HasFlag(CreatureState.Intangible)) continue;
+                                if (–°heck(new int[] { mario.X, mario.X + mario.width, mario.Y, mario.Y + mario.height }, new int[] { creatures[i].X, creatures[i].X + creatures[i].width, creatures[i].Y, creatures[i].Y + creatures[i].height }))
                                 {
                                     i = Creatures_in_mario(i);
                                 }
                             }
                         }
-                    }
-                    if (mario.Y + mario.height > mario.top)
-                    {
-                        mario.block_we_stand = -1;
-                        mario.Y = mario.top - (mario.Y + mario.height - mario.Y);
                     }
                 }
                 else
@@ -524,18 +642,17 @@ namespace Mario1
 
         private bool Paday_Mario(bool direction)
         {
-            if (mario.block_we_stand != -1 & !mario.TimerSpace)
+            if (mario.we_stand != -1 & !mario.TimerSpace)
             {
-                if (mario.X + mario.width < blocks[mario.block_we_stand].X || mario.X > (blocks[mario.block_we_stand].X + blocks[mario.block_we_stand].width))
+                if (mario.X + mario.width < blocks[mario.we_stand].X || mario.X > (blocks[mario.we_stand].X + blocks[mario.we_stand].width))
                 {
                     for (int i = 0; i < blocks.Count; i++)
                     {
-                        if (mario.block_we_stand == i) continue;
-                        if(blocks[i].Y == blocks[mario.block_we_stand].Y & ((!direction & blocks[i].X + blocks[i].width > blocks[mario.block_we_stand].X - 15 & blocks[i].X < blocks[mario.block_we_stand].X) || (direction & blocks[i].X < blocks[mario.block_we_stand].X + blocks[mario.block_we_stand].width + 15 & blocks[i].X > blocks[mario.block_we_stand].X))) 
-                        { mario.block_we_stand = i; return false; }
+                        if (mario.we_stand == i) continue;
+                        if(blocks[i].Y == blocks[mario.we_stand].Y & ((!direction & blocks[i].X + blocks[i].width > blocks[mario.we_stand].X - 15 & blocks[i].X < blocks[mario.we_stand].X) || (direction & blocks[i].X < blocks[mario.we_stand].X + blocks[mario.we_stand].width + 15 & blocks[i].X > blocks[mario.we_stand].X))) 
+                        { mario.we_stand = i; return false; }
                     }
-                    mario.block_we_stand = -1;
-                    mario.top = 3000;
+                    mario.we_stand = -1;
                     mario.TimerGravity = true;
                     return true;
                 }
@@ -552,7 +669,7 @@ namespace Mario1
                 switch (blocks[r].name)
                 {
                     case "Bricks":
-                        if (mario.mode == "ordinary")
+                        if (mario.mode == "ordinary" || mario.mode == "intangible ordinary")
                         {
                             if (blocks[r].sluchay[0] >= 0 & blocks[r].sluchay[0] < 7)
                             {
@@ -585,14 +702,18 @@ namespace Mario1
                         }
                         else if (mario.mode == "big ordinary" || mario.mode == "big shooter")
                         {
-                            if (mario.block_we_stand > r) { mario.block_we_stand -= 1; }
+                            blocks[r].Y -= 2;
+                            Knocking_out_enemy_creatures_with_a_block(r);
                             blocks.RemoveAt(r);
                             mario.nam.RemoveAt(i);
                             for (int t = 0; t < mario.nam.Count; t++)
                             {
-                                if (mario.nam[t] > r) mario.nam[t] -= 1;
+                                if (mario.nam[t] == i) mario.nam.RemoveAt(t--);
+                                else if (mario.nam[t] > i) mario.nam[t]--;
                             }
-                            i -= 1;
+                            creatures = blocks[i].Check_—Åreature_we_stand(creatures, i);
+                            if (mario.we_stand > i) mario.we_stand--;
+                            i--;
                         }
                         break;
                         
@@ -634,11 +755,11 @@ namespace Mario1
                             {
                                 if (blocks[r].property == "mushroom/flower bonus")
                                 {
-                                    if (mario.mode == "ordinary") Òreatures.Add(new Creature(x: blocks[r].X, y: blocks[r].sluchay[1], name: "mushroom bonus", height: 0, width: 83, direction: true, property: "bonus", top: 3000, g: 1, spaceG: 0, condition: "stands", image: Properties.Resources.Super_Mushroom, proper_height: 83));
-                                    else if (mario.mode == "big ordinary" || mario.mode == "big shooter") Òreatures.Add(new Creature ( x: blocks[r].X, y: blocks[r].sluchay[1], name: "flower bonus", height: 0, width: 83, direction: true, property: "bonus", top: 3000, g: 1, spaceG: 0, condition: "stands", image: Properties.Resources.Fire_Flower__1_, proper_height: 83));
+                                    if (mario.mode == "ordinary" || mario.mode == "intangible ordinary") creatures.Add(new Creature(x: blocks[r].X, y: blocks[r].sluchay[1], name: "mushroom bonus", height: 0, width: 83, direction: true, property: "bonus", top: 3000, g: 1, spaceG: 0, condition: new List<string> { "stands" }, image: Properties.Resources.Super_Mushroom, proper_height: 83));
+                                    else if (mario.mode == "big ordinary" || mario.mode == "big shooter") creatures.Add(new Creature ( x: blocks[r].X, y: blocks[r].sluchay[1], name: "flower bonus", height: 0, width: 83, direction: true, property: "bonus", top: 3000, g: 1, spaceG: 0, condition: new List<string> { "stands" }, image: Properties.Resources.Fire_Flower__1_, proper_height: 83));
                                 }
-                                //ËÒÍÎ˛˜ÂÌËÂ ‚ top!!! (Ò˛‰‡ ÒÓı‡ÌˇÂÚÒˇ ÁÌ‡˜ÂÌËÂ sluchay[i][1], ˜ÚÓ·˚ Ò‡‚ÌËÚ¸ Ò Â‡Î¸Ì˚Ï spawnY_creatures ‰Îˇ Û‰‡ÎÂÌËˇ ÔË ‰ÓÒÚËÊÂÌËË ÓÔÂ‰ÂÎ∏ÌÌÓÈ ‚˚ÒÓÚ˚)
-                                else if (blocks[mario.nam[i]].property == "money") Òreatures.Add(new Creature(x: blocks[r].X + (blocks[r].width / 2) - 16, y: blocks[r].sluchay[1], name: "money bonus", height: 0, width: 32, direction: true, property: "bonus", top: blocks[r].sluchay[1], g: 1, spaceG: 0, condition: "stands", image: Properties.Resources.Coin, proper_height: 56));
+                                //–∏—Å–∫–ª—é—á–µ–Ω–∏–µ –≤ top!!! (—Å—é–¥–∞ —Å–æ—Ö—Ä–∞–Ω—è–µ—Ç—Å—è –∑–Ω–∞—á–µ–Ω–∏–µ sluchay[r][1], —á—Ç–æ–±—ã —Å—Ä–∞–≤–Ω–∏—Ç—å —Å —Ä–µ–∞–ª—å–Ω—ã–º spawnY_creatures –¥–ª—è —É–¥–∞–ª–µ–Ω–∏—è –ø—Ä–∏ –¥–æ—Å—Ç–∏–∂–µ–Ω–∏–∏ –æ–ø—Ä–µ–¥–µ–ª—ë–Ω–Ω–æ–π –≤—ã—Å–æ—Ç—ã)
+                                else if (blocks[mario.nam[i]].property == "money") creatures.Add(new Creature(x: blocks[r].X + (blocks[r].width / 2) - 16, y: blocks[r].sluchay[1], name: "money bonus", height: 0, width: 32, direction: true, property: "bonus", top: blocks[r].sluchay[1], g: 1, spaceG: 0, condition: new List<string> { "stands", "coin_up" }, image: Properties.Resources.Coin, proper_height: 56));
                             }
                             blocks[r].sluchay[0] += 1;
                         }
@@ -672,40 +793,46 @@ namespace Mario1
 
         private short Creatures_come_out(short i)
         {
-            if (Òreatures[i].property == "bonus" & Òreatures[i].condition.Find(x => x == "stands") == "stands")
+            if (creatures[i].property == "bonus" & creatures[i].State.HasFlag(CreatureState.Stands))
             {
-                if (Òreatures[i].name == "mushroom bonus" || Òreatures[i].name == "flower bonus")
+                if (creatures[i].name == "mushroom bonus" || creatures[i].name == "flower bonus")
                 {
-                    if (Òreatures[i].height >= Òreatures[i].proper_height)
+                    if (creatures[i].height >= creatures[i].proper_height)
                     {
-                        if (Òreatures[i].name == "mushroom bonus") Òreatures[i].condition.Remove("stands");
+                        if (creatures[i].name == "mushroom bonus") creatures[i].State &= ~CreatureState.Stands;
                     }
                     else
                     {
-                        Òreatures[i].Y -= 1;
-                        Òreatures[i].height += 1;
+                        creatures[i].Y -= 1;
+                        creatures[i].height += 1;
                     }
                 }
-                else if (Òreatures[i].name == "money bonus")
+                else if (creatures[i].name == "money bonus")
                 {
-                    if (Òreatures[i].height < Òreatures[i].proper_height)
+                    if (creatures[i].State.HasFlag(CreatureState.CoinUp))
                     {
-                        mario.coin += 1;
-                        if (mario.coin == 100)
+                        if (creatures[i].height < creatures[i].proper_height)
                         {
-                            mario.coin = 0;
-                            lives++;
+                            if (!creatures[i].State.HasFlag(CreatureState.CoinFalse))
+                            {
+                                mario.coin += 1;
+                                creatures[i].State |= CreatureState.Intangible | CreatureState.CoinFalse;
+                                if (mario.coin >= mario.coin_max)
+                                {
+                                    mario.coin = 0;
+                                    lives++;
+                                }
+                            }
+                            creatures[i].Y -= 6;
+                            creatures[i].height += 6;
                         }
-                        Òreatures[i].Y -= 6;
-                        Òreatures[i].height += 6;
-                    }
-                    else
-                    {
-                        Òreatures[i].Y -= 6;
-                        if (Òreatures[i].Y < Òreatures[i].top - 150)// top_creatures[i] ËÁ ËÒÍÎ˛˜ÂÌËˇ!!! (‚‚Ó‰ËÚÒˇ ÔË ÒÓÁ‰‡ÌËË money bonus)
+                        else
                         {
-                            blocks = Òreatures[i].Check_block_we_stand(blocks, i, "dead");
-                            Òreatures.RemoveAt(i--);
+                            creatures[i].Y -= 6;
+                            if (creatures[i].Y < creatures[i].top - 150)// top_creatures[r] –∏–∑ –∏—Å–∫–ª—é—á–µ–Ω–∏—è!!! (–≤–≤–æ–¥–∏—Ç—Å—è –ø—Ä–∏ —Å–æ–∑–¥–∞–Ω–∏–∏ money bonus)
+                            {
+                                creatures.RemoveAt(i--);
+                            }
                         }
                     }
                 }
@@ -715,108 +842,107 @@ namespace Mario1
 
         private short Movement_creatures_X(short i)
         {
-            if (Òreatures[i].condition.Find(x => x == "dead_fall") == "dead_fall") return i;
-            if (Òreatures[i].condition.Find(x => x == "stands") != "stands")
+            if (creatures[i].State.HasFlag(CreatureState.DeadFall)) return i;
+            if (!creatures[i].State.HasFlag(CreatureState.Stands))
             {
-                if (Òreatures[i].direction)
+                if (creatures[i].direction)
                 {
-                    Òreatures[i].X += Òreatures[i].speed;
+                    creatures[i].X += (int)(creatures[i].speed * _timeScale);
                     for (short r = 0; r < blocks.Count; r++)
                     {
-                        if (—heck(new int[] { Òreatures[i].X, Òreatures[i].X + Òreatures[i].width, Òreatures[i].Y, Òreatures[i].Y + Òreatures[i].height }, new int[] { blocks[r].X, blocks[r].X + blocks[r].width, blocks[r].Y, blocks[r].Y + blocks[r].height }) == true)
+                        if (creatures[i].State.HasFlag(CreatureState.Intangible)) break;
+                        if (–°heck(new int[] { creatures[i].X, creatures[i].X + creatures[i].width, creatures[i].Y, creatures[i].Y + creatures[i].height }, new int[] { blocks[r].X, blocks[r].X + blocks[r].width, blocks[r].Y, blocks[r].Y + blocks[r].height }) == true)
                         {
-                            Òreatures[i].X = blocks[r].X - Òreatures[i].width;
-                            Òreatures[i].direction = false;
-                        }
-                        Check_block_we_stand(i, r);
+                            creatures[i].X = blocks[r].X - creatures[i].width;
+                            creatures[i].direction = false;
+                        };
                     }
+                    Check_block_we_stand(i);
                 }
                 else
                 {
-                    Òreatures[i].X -= Òreatures[i].speed;
+                    creatures[i].X -= (int)(creatures[i].speed * _timeScale);
                     for (short r = 0; r < blocks.Count; r++)
                     {
-                        if (—heck(new int[] { Òreatures[i].X, Òreatures[i].X + Òreatures[i].width, Òreatures[i].Y, Òreatures[i].Y + Òreatures[i].height }, new int[] { blocks[r].X, blocks[r].X + blocks[r].width, blocks[r].Y, blocks[r].Y + blocks[r].height }) == true)
+                        if (creatures[i].State.HasFlag(CreatureState.Intangible)) break;
+                        if (–°heck(new int[] { creatures[i].X, creatures[i].X + creatures[i].width, creatures[i].Y, creatures[i].Y + creatures[i].height }, new int[] { blocks[r].X, blocks[r].X + blocks[r].width, blocks[r].Y, blocks[r].Y + blocks[r].height }) == true)
                         {
-                            Òreatures[i].X = blocks[r].X + blocks[r].width;
-                            Òreatures[i].direction = true;
+                            creatures[i].X = blocks[r].X + blocks[r].width;
+                            creatures[i].direction = true;
                         }
-                        Check_block_we_stand(i, r);
                     }
+                    Check_block_we_stand(i);
                 }
-                if (Òreatures[i].condition.Find(x => x == "attack_on_everyone") != "attack_on_everyone") Òreatures[i].Animation("Walk");
+                if (!creatures[i].State.HasFlag(CreatureState.AttackOnEveryone)) creatures[i].Animation("Walk");
             }
-            for (short r = 0; r < Òreatures.Count; r++)
+            for (short r = 0; r < creatures.Count; r++)
             {
-                if (r == i || Òreatures[r].condition.Find(x => x == "stands") == "stands" || Òreatures[r].condition.Find(x => x == "intangible") == "intangible") continue;
-                if (—heck(new int[] { Òreatures[r].X, Òreatures[r].X + Òreatures[r].width, Òreatures[r].Y, Òreatures[r].Y + Òreatures[r].height }, new int[] { Òreatures[i].X, Òreatures[i].X + Òreatures[i].width, Òreatures[i].Y, Òreatures[i].Y + Òreatures[i].height }) == true)
+                if (creatures[i].State.HasFlag(CreatureState.Intangible)) break;
+                if (r == i || creatures[r].State.HasFlag(CreatureState.Stands) || creatures[r].State.HasFlag(CreatureState.Intangible)) continue;
+                if (–°heck(new int[] { creatures[r].X, creatures[r].X + creatures[r].width, creatures[r].Y, creatures[r].Y + creatures[r].height }, new int[] { creatures[i].X, creatures[i].X + creatures[i].width, creatures[i].Y, creatures[i].Y + creatures[i].height }) == true)
                 {
-                    if ((Òreatures[r].property == "Attack against creatures" & Òreatures[i].property == "") || (Òreatures[i].property == "Attack against creatures" & Òreatures[r].property == ""))
+                    if ((creatures[r].property == "Attack against creatures" & creatures[i].property == "") || (creatures[i].property == "Attack against creatures" & creatures[r].property == ""))
                     {
-                        blocks = Òreatures[i].Check_block_we_stand(blocks, i, "dead");
-                        Òreatures.RemoveAt(i);
+                        creatures.RemoveAt(i);
                         if (i < r) { r -= 1; i -= 1; }
                         else i -= 2;
-                        blocks = Òreatures[r].Check_block_we_stand(blocks, r, "dead");
-                        Òreatures.RemoveAt(r);
+                        creatures.RemoveAt(r);
                         if (i == -1) return i;
                         if (r == -1) break;
-                        //break;
                     }
-                    else if (Òreatures[i].condition.Find(x => x == "attack_on_everyone") == "attack_on_everyone" & Òreatures[r].condition.Find(x => x == "attack_on_everyone") != "attack_on_everyone")
+                    else if (creatures[i].State.HasFlag(CreatureState.AttackOnEveryone) & !creatures[r].State.HasFlag(CreatureState.AttackOnEveryone))
                     {
-                        blocks = Òreatures[r].Dead_fall(blocks, r);
+                         creatures[r].Dead_fall();
                     }
-                    else if (Òreatures[r].condition.Find(x => x == "attack_on_everyone") == "attack_on_everyone" & Òreatures[i].condition.Find(x => x == "attack_on_everyone") != "attack_on_everyone")
+                    else if (creatures[r].State.HasFlag(CreatureState.AttackOnEveryone) & !creatures[i].State.HasFlag(CreatureState.AttackOnEveryone))
                     {
-                        blocks = Òreatures[i].Dead_fall(blocks, i);
+                        creatures[i].Dead_fall();
                     }
-                    else if ((Òreatures[r].property != "Attack against creatures" & Òreatures[i].property != "Attack against creatures") || (Òreatures[i].condition.Find(x => x == "attack_on_everyone") == "attack_on_everyone" & Òreatures[r].condition.Find(x => x == "attack_on_everyone") == "attack_on_everyone"))
+                    else if ((creatures[r].property != "Attack against creatures" & creatures[i].property != "Attack against creatures") || (creatures[i].State.HasFlag(CreatureState.AttackOnEveryone) & creatures[r].State.HasFlag(CreatureState.AttackOnEveryone)))
                     {
-                        if (Òreatures[i].direction != true) Òreatures[i].direction = true;
-                        else Òreatures[i].direction = false;
-                        if (Òreatures[r].direction != false) Òreatures[r].direction = false;
-                        else Òreatures[r].direction = true;
+                        if (creatures[i].direction != true) creatures[i].direction = true;
+                        else creatures[i].direction = false;
+                        if (creatures[r].direction != false) creatures[r].direction = false;
+                        else creatures[r].direction = true;
                     }
                 }
             }
-
-            if (Òreatures[i].condition.Find(x => x == "waiting_for_Mario_to_exit_to_kill") == "waiting_for_Mario_to_exit_to_kill") 
+            if (creatures[i].State.HasFlag(CreatureState.WaitingForMario)) 
             {
-                if (!—heck(new int[] { mario.X, mario.X + mario.width, mario.Y, mario.Y + mario.height }, new int[] { Òreatures[i].X, Òreatures[i].X + Òreatures[i].width, Òreatures[i].Y, Òreatures[i].Y + Òreatures[i].height }) == true)
+                if (!–°heck(new int[] { mario.X, mario.X + mario.width, mario.Y, mario.Y + mario.height }, new int[] { creatures[i].X, creatures[i].X + creatures[i].width, creatures[i].Y, creatures[i].Y + creatures[i].height }) == true)
                 {
-                    Òreatures[i].condition.Remove("waiting_for_Mario_to_exit_to_kill");
-                    Òreatures[i].condition.Remove("doesn_t_kill");
+                    creatures[i].State &= ~CreatureState.WaitingForMario & ~CreatureState.DoesntKill;
                 }
             }
-            else if (mario.mode != "intangible ordinary" & !mario.deadPadeniye & Òreatures[i].condition.Find(x => x == "doesn_t_kill") != "doesn_t_kill" & Òreatures[i].condition.Find(x => x == "intangible") != "intangible") 
+            else if (mario.mode != "intangible ordinary" & !mario.deadPadeniye & !creatures[i].State.HasFlag(CreatureState.DoesntKill) & !creatures[i].State.HasFlag(CreatureState.Intangible)) 
             {
-                if (—heck(new int[] { mario.X, mario.X + mario.width, mario.Y, mario.Y + mario.height }, new int[] { Òreatures[i].X, Òreatures[i].X + Òreatures[i].width, Òreatures[i].Y, Òreatures[i].Y + Òreatures[i].height }) == true)
-                    return Mario_in_Òreatures(i);
+                if (–°heck(new int[] { mario.X, mario.X + mario.width, mario.Y, mario.Y + mario.height }, new int[] { creatures[i].X, creatures[i].X + creatures[i].width, creatures[i].Y, creatures[i].Y + creatures[i].height }) == true)
+                    return Mario_in_—Åreatures(i);
             }
             return i;
         }
-
-        private short Jump_Òreatures(short i)
+        
+        private short Jump_—Åreatures(short i)
         {
-            if (Òreatures[i].spaceG > 0)
+            if (creatures[i].spaceG > 0 & !creatures[i].TimerGravity)
             {
-                Òreatures[i].Y -= Òreatures[i].spaceG;
-                Òreatures[i].spaceG--;
-                if (Òreatures[i].condition.Find(x => x == "stands") != "stands")
+                creatures[i].Y -= (int)(creatures[i].spaceG * _timeScale);
+                creatures[i].spaceG--;
+                if (creatures[i].we_stand != -1) creatures[i].we_stand = -1;
+                if (!creatures[i].State.HasFlag(CreatureState.Stands) & !creatures[i].State.HasFlag(CreatureState.Intangible))
                 {
                     for (short r = 0; r < blocks.Count; r++)
                     {
-                        if (—heck(new int[] { Òreatures[i].X, Òreatures[i].X + Òreatures[i].width, Òreatures[i].Y, Òreatures[i].Y + Òreatures[i].height }, new int[] { blocks[r].X, blocks[r].X + blocks[r].width, blocks[r].Y, blocks[r].Y + blocks[r].height }) == true)
+                        if (–°heck(new int[] { creatures[i].X, creatures[i].X + creatures[i].width, creatures[i].Y, creatures[i].Y + creatures[i].height }, new int[] { blocks[r].X, blocks[r].X + blocks[r].width, blocks[r].Y, blocks[r].Y + blocks[r].height }) == true)
                         {
-                            Òreatures[i].Y = blocks[r].Y + blocks[i].height;
-                            Òreatures[i].spaceG = 0;
+                            creatures[i].Y = blocks[r].Y + blocks[r].height;
+                            creatures[i].spaceG = 0;
                         }
                     }
                 }
-                if (mario.mode != "intangible ordinary" || Òreatures[i].condition.Find(x => x == "intangible") != "intangible")
+                if (mario.mode != "intangible ordinary" || !creatures[i].State.HasFlag(CreatureState.Intangible))
                 {
-                    if (—heck(new int[] { mario.X, mario.X + mario.width, mario.Y, mario.Y + mario.height }, new int[] { Òreatures[i].X, Òreatures[i].X + Òreatures[i].width, Òreatures[i].Y, Òreatures[i].Y + Òreatures[i].height }) == true)
+                    if (–°heck(new int[] { mario.X, mario.X + mario.width, mario.Y, mario.Y + mario.height }, new int[] { creatures[i].X, creatures[i].X + creatures[i].width, creatures[i].Y, creatures[i].Y + creatures[i].height }) == true)
                     {
                         return Creatures_in_mario(i);
                     }
@@ -824,54 +950,68 @@ namespace Mario1
             }
             else
             {
-                if (Òreatures[i].condition.Find(x => x == "jamp") == "jamp")
+                if (creatures[i].State.HasFlag(CreatureState.Jump))
                 {
-                    Òreatures[i].spaceG = 25;
+                    creatures[i].spaceG = creatures[i].spaceG_const;
+                    creatures[i].TimerGravity = true;
                 }
             }
             return i;
         }
 
-        private short Fall_Òreatures(short i)
+        private short Fall_—Åreatures(short i)
         {
-            if (Òreatures[i].property == "bonus" & Òreatures[i].condition.Find(x => x == "stands") == "stands") return i;
-            if (Òreatures[i].Y + Òreatures[i].height < Òreatures[i].top)
+            if (creatures[i].property == "bonus" & creatures[i].State.HasFlag(CreatureState.Stands)) return i;
+            if (creatures[i].TimerGravity)
             {
-                for (int r = 0; r < Òreatures[i].g; r++)
-                {
-                    Òreatures[i].Y += 1;
-                    if (Òreatures[i].Y + Òreatures[i].height >= Òreatures[i].top) break;
-                }
-                Òreatures[i].g += 1;
-                if (Òreatures[i].condition.Find(x => x == "dead_fall") == "dead_fall") return i;
+                creatures[i].Y += (int)(creatures[i].g * _timeScale);
+                creatures[i].g++;
+                if (creatures[i].State.HasFlag(CreatureState.DeadFall) || creatures[i].State.HasFlag(CreatureState.Intangible)) return i;
                 for (short r = 0; r < blocks.Count; r++)
                 {
-                    if (—heck(new int[] { Òreatures[i].X, Òreatures[i].X + Òreatures[i].width, Òreatures[i].Y, Òreatures[i].Y + Òreatures[i].height }, new int[] { blocks[r].X, blocks[r].X + blocks[r].width, blocks[r].Y, blocks[r].Y + blocks[r].height }) == true)
+                    if (–°heck(new int[] { creatures[i].X, creatures[i].X + creatures[i].width, creatures[i].Y, creatures[i].Y + creatures[i].height }, new int[] { blocks[r].X, blocks[r].X + blocks[r].width, blocks[r].Y, blocks[r].Y + blocks[r].height }) == true)
                     {
-                        Òreatures[i].Y = (blocks[r].Y - Òreatures[i].height);
-                        blocks[r].block_we_stand = i;
-                        Òreatures[i].top = blocks[r].Y;
-                 
+                        creatures[i].Y = (blocks[r].Y - creatures[i].height);
+                        creatures[i].we_stand = r;
+                        creatures[i].TimerGravity = false;
                     }
                 }
-                if (mario.mode != "intangible ordinary" & !mario.deadPadeniye & Òreatures[i].condition.Find(x => x == "doesn_t_kill") != "doesn_t_kill" & Òreatures[i].condition.Find(x => x == "intangible") != "intangible")
+                if (mario.mode != "intangible ordinary" & !mario.deadPadeniye & !creatures[i].State.HasFlag(CreatureState.DoesntKill))
                 {
-                    if (—heck(new int[] { mario.X, mario.X + mario.width, mario.Y, mario.Y + mario.height }, new int[] { Òreatures[i].X, Òreatures[i].X + Òreatures[i].width, Òreatures[i].Y, Òreatures[i].Y + Òreatures[i].height }) == true)
+                    if (–°heck(new int[] { mario.X, mario.X + mario.width, mario.Y, mario.Y + mario.height }, new int[] { creatures[i].X, creatures[i].X + creatures[i].width, creatures[i].Y, creatures[i].Y + creatures[i].height }) == true)
+                        return Mario_in_—Åreatures(i);
+                }
+            }
+            else creatures[i].g = 1;
+            return i;
+        }
+
+        private void –°hecking_blocks()
+        {
+            for (int i = 0; i < blocks.Count; i++)
+            {
+                if (blocks[i].property == "up->teleport_down->up")
+                {
+                    if (blocks[i].Y + blocks[i].height + 100 <= 0) blocks[i].Y = screenHeight + 100;
+                    blocks[i].Y -= 5;
+                    if (–°heck(new int[] { mario.X, mario.X + mario.width, mario.Y, mario.Y + mario.height }, new int[] { blocks[i].X, blocks[i].X + blocks[i].width, blocks[i].Y, blocks[i].Y + blocks[i].height }))
                     {
-                        return Mario_in_Òreatures(i);
+                        mario.Y = blocks[i].Y - mario.height;
+                    }
+                    for (int r = 0; r < creatures.Count; r++)
+                    {
+                        if (–°heck(new int[] { creatures[r].X, creatures[r].X + creatures[r].width, creatures[r].Y, creatures[r].Y + creatures[r].height }, new int[] { blocks[i].X, blocks[i].X + blocks[i].width, blocks[i].Y, blocks[i].Y + blocks[i].height }))
+                        {
+                            creatures[r].Y = blocks[i].Y - creatures[r].height;
+                        }
                     }
                 }
             }
-            else
-            {
-                Òreatures[i].g = 1;
-            }
-            return i;
         }
 
         private short Creatures_in_mario(short i)
         {
-            if (Òreatures[i].property == "bonus")
+            if (creatures[i].name == "mushroom bonus" || creatures[i].name == "flower bonus")
             {
                 if (mario.mode == "ordinary")
                 {
@@ -887,11 +1027,17 @@ namespace Mario1
                     mario.mode = "big shooter";
                     mario.Defines_the_image("Fiery Mario");
                 }
-                blocks = Òreatures[i].Check_block_we_stand(blocks, i, "dead");
-                Òreatures.RemoveAt(i--);
+                creatures.RemoveAt(i--);
                 return i;
             }
-            else if (Òreatures[i].property == "")
+            else if (creatures[i].name == "money bonus")
+            {
+                mario.coin++;
+                if (mario.coin >= mario.coin_max) { mario.coin = 0; lives++; }
+                creatures.RemoveAt(i--);
+                return i;
+            }
+            else if (creatures[i].property == "")
             {
                 mario.Y -= mario.g;
                 mario.g = 1;
@@ -899,56 +1045,62 @@ namespace Mario1
                 mario.TimerGravity = false;
                 mario.TimerSpace = true;
                 
-                if (Òreatures[i].name == "SMB_greenparatrooper" || Òreatures[i].name == "SMB_greenkoopatroopa")
+                if (creatures[i].name == "SMB_greenkoopatroopa")
                 {
-                    if (Òreatures[i].condition.Find(x => x == "doesn_t_kill") == "doesn_t_kill")
+                    if (creatures[i].State.HasFlag(CreatureState.DoesntKill))
                     {
-                        Òreatures[i].condition.Remove("stands");
-                        Òreatures[i].condition.Add("waiting_for_Mario_to_exit_to_kill");
-                        Òreatures[i].condition.Add("attack_on_everyone");
-                        Òreatures[i].speed = 15;
-                        if (mario.X + (mario.width/2) <= Òreatures[i].X + (Òreatures[i].width / 2)) Òreatures[i].direction = true;
-                        else Òreatures[i].direction = false;
+                        creatures[i].State &= ~CreatureState.Stands;
+                        creatures[i].State |= CreatureState.WaitingForMario | CreatureState.AttackOnEveryone;
+                        creatures[i].speed = 15;
+                        if (mario.X + (mario.width/2) <= creatures[i].X + (creatures[i].width / 2)) creatures[i].direction = true;
+                        else creatures[i].direction = false;
                     }
                     else
                     {
-                        Òreatures[i].g = 15;
-                        Òreatures[i].spaceG = 0;
-                        Òreatures[i].height = 38;
-                        Òreatures[i].width = 45;
-                        Òreatures[i].condition.Remove("jamp");
-                        Òreatures[i].condition.Add("stands");
-                        Òreatures[i].condition.Add("doesn_t_kill");
-                        Òreatures[i].Animation("Dead");
+                        creatures[i].g = 1;
+                        creatures[i].spaceG = 0;
+                        creatures[i].height = 38;
+                        creatures[i].width = 45;
+                        creatures[i].TimerGravity = true;
+                        creatures[i].State |= CreatureState.DoesntKill | CreatureState.Stands;
+                        creatures[i].State &= ~CreatureState.Jump;
+                        creatures[i].Animation("Dead");
                     }
                         
                 }
-                else if (Òreatures[i].name == "Image_Goomba")
+                else if (creatures[i].name == "SMB_greenparatrooper")
                 {
-                    Òreatures[i].g = 15;
-                    Òreatures[i].height = 35;
-                    Òreatures[i].run_animation = 0;
-                    Òreatures[i].condition.Add("intangible");
-                    Òreatures[i].condition.Add("stands");
-                    Òreatures[i].condition.Add("doesn_t_kill");
-                    Òreatures[i].Animation("Dead");
+                    creatures[i].name = "SMB_greenkoopatroopa";
+                    creatures[i].State &= ~CreatureState.Jump;
+                    creatures[i].TimerGravity = true;
+                    creatures[i].spaceG = 0;
+                    creatures[i].image = Properties.Resources.SMB_greenkoopatroopa1;
+                }
+                else if (creatures[i].name == "Image_Goomba")
+                {
+                    creatures[i].g = 15;
+                    creatures[i].height = 40;
+                    if (creatures[i].we_stand == -1) creatures[i].TimerGravity = true;
+                    else creatures[i].Y = blocks[creatures[i].we_stand].Y - creatures[i].height;
+                    creatures[i].run_animation = 0;
+                    creatures[i].State |= CreatureState.Intangible | CreatureState.Stands | CreatureState.DoesntKill;
+                    creatures[i].Animation("Dead");
                 }
             }
             return i;
         }
 
-        private short Mario_in_Òreatures(short i)
+        private short Mario_in_—Åreatures(short i)
         {
-            if (Òreatures[i].condition.Find(x => x == "doesn_t_kill") == "doesn_t_kill" & (Òreatures[i].name == "SMB_greenparatrooper" || Òreatures[i].name == "SMB_greenkoopatroopa"))
+            if (creatures[i].State.HasFlag(CreatureState.DoesntKill) & (creatures[i].name == "SMB_greenparatrooper" || creatures[i].name == "SMB_greenkoopatroopa"))
             {
-                Òreatures[i].condition.Remove("stands");
-                Òreatures[i].condition.Add("waiting_for_Mario_to_exit_to_kill");
-                Òreatures[i].condition.Add("attack_on_everyone");
-                Òreatures[i].speed = 15;
-                if (mario.X + (mario.width / 2) <= Òreatures[i].X + (Òreatures[i].width / 2)) Òreatures[i].direction = true;
-                else Òreatures[i].direction = false;
+                creatures[i].State &= ~CreatureState.Stands;
+                creatures[i].State |= CreatureState.WaitingForMario | CreatureState.AttackOnEveryone;
+                creatures[i].speed = 15;
+                if (mario.X + (mario.width / 2) <= creatures[i].X + (creatures[i].width / 2)) creatures[i].direction = true;
+                else creatures[i].direction = false;
             }
-            else if (Òreatures[i].property == "bonus")
+            else if (creatures[i].name == "mushroom bonus" || creatures[i].name == "flower bonus")
             {
                 if (mario.mode == "ordinary")
                 {
@@ -963,10 +1115,16 @@ namespace Mario1
                     mario.mode = "big shooter";
                     mario.Defines_the_image("Fiery Mario");
                 }
-                blocks = Òreatures[i].Check_block_we_stand(blocks, i, "dead");
-                Òreatures.RemoveAt(i--);
+                creatures.RemoveAt(i--);
             }
-            else if (Òreatures[i].property == "")
+            else if (creatures[i].name == "money bonus")
+            {
+                mario.coin++;
+                if (mario.coin >= mario.coin_max) { mario.coin = 0; lives++; }
+                creatures.RemoveAt(i--);
+                return i;
+            }
+            else if (creatures[i].property == "")
             {
                 if (mario.mode == "ordinary")
                 {
@@ -985,13 +1143,22 @@ namespace Mario1
             return i;
         }
 
-        private void Check_block_we_stand(int creatures_i, int blocks_i)
+        private void Check_block_we_stand(int creatures_i)
         {
-            if (blocks[blocks_i].block_we_stand == -1 || Òreatures[creatures_i].top == 3000) return;
-            if ((Òreatures[creatures_i].X + Òreatures[creatures_i].width) < blocks[blocks_i].X || Òreatures[creatures_i].X > (blocks[blocks_i].X + blocks[blocks_i].width))
+            if (creatures[creatures_i].we_stand == -1 || creatures[creatures_i].TimerGravity) return;
+            int blocks_i = creatures[creatures_i].we_stand;
+            if
+            (
+                (
+                    creatures[creatures_i].X + creatures[creatures_i].width) < blocks[blocks_i].X
+                    ||
+                    creatures[creatures_i].X > (blocks[blocks_i].X + blocks[blocks_i].width
+                )
+            )
             {
-                Òreatures[creatures_i].top = 3000;
-                blocks[blocks_i].block_we_stand = -1;
+                creatures[creatures_i].TimerGravity = true;
+                creatures[creatures_i].top = 3000;
+                creatures[creatures_i].we_stand = -1;
             }
         }
 
@@ -1062,6 +1229,8 @@ namespace Mario1
                     }
                     else if ((!mario.TimerLeft & !mario.TimerSliding & !mario.TimerRight) || (mario.TimerLeft & mario.TimerSliding & !mario.TimerRight))
                     {
+                        mario.braking2 = false;
+                        mario.braking = false;
                         mario.TimerLeft = true;
                         mario.direction = false;
                         mario.TimerSliding = false;
@@ -1080,6 +1249,8 @@ namespace Mario1
                     }
                     else if ((!mario.TimerRight & !mario.TimerSliding & !mario.TimerLeft) || (mario.TimerRight & mario.TimerSliding & !mario.TimerLeft))
                     {
+                        mario.braking2 = false;
+                        mario.braking = false;
                         mario.TimerRight = true;
                         mario.direction = true;
                         mario.TimerSliding = false;
@@ -1092,8 +1263,7 @@ namespace Mario1
                 {
                     if (mario.mode == "big shooter" & mario.pause_atack_fire_bar == 0)
                     {
-                        if (mario.direction == true) Òreatures.Add(new Creature(x: mario.X + 32, y: mario.Y + 32, direction: true, name: "Fire bar", width: 16, height: 16, condition: "jamp", property: "Attack against creatures", g: 1, spaceG: 25, top: 3000, image: Properties.Resources.Fire_bar));
-                        else Òreatures.Add(new Creature(x: mario.X + 32, y: mario.Y + 32, direction: false, name: "Fire bar", width: 16, height: 16, condition: "jamp", property: "Attack against creatures", g: 1, spaceG: 25, top: 3000, image: Properties.Resources.Fire_bar));
+                        creatures.Add(new Creature(x: mario.X + 32, y: mario.Y + 32, direction: mario.direction, name: "Fire bar", width: 16, height: 16, condition: new List<string> { "jump" }, property: "Attack against creatures", g: 1, spaceG: 17, top: 3000, image: Properties.Resources.Fire_bar));
                         mario.pause_atack_fire_bar = 50;
                     }
                 }
@@ -1106,7 +1276,7 @@ namespace Mario1
 
                 if(e.KeyCode == Keys.Up)
                 {
-                    if (!mario.TimerGravity & mario.block_we_stand != -1 & !mario.TimerSpace)
+                    if (!mario.TimerGravity & mario.we_stand != -1 & !mario.TimerSpace)
                     {
                         if (mario.sits) { mario.sits = false; mario.height = nav.base_height_ordinary(""); mario.Y -= nav.base_height_ordinary("") - nav.base_height_ordinary("sits"); }
                         mario.spaceG_bool = true;
@@ -1145,17 +1315,17 @@ namespace Mario1
 
         private void Knocking_out_enemy_creatures_with_a_block(int nam)
         {
-            for (int i = 0; i < Òreatures.Count; i++)
+            for (int i = 0; i < creatures.Count; i++)
             {
-                if (Òreatures[i].property == "bonus") continue;
-                if (—heck(new int[] { Òreatures[i].X, Òreatures[i].X + Òreatures[i].width, Òreatures[i].Y, Òreatures[i].Y + Òreatures[i].height }, new int[] { blocks[nam].X, blocks[nam].X + blocks[nam].width, blocks[nam].Y, blocks[nam].Y + blocks[nam].height }) == true)
+                if (creatures[i].State.HasFlag(CreatureState.Stands)) continue;  
+                if (–°heck(new int[] { creatures[i].X, creatures[i].X + creatures[i].width, creatures[i].Y, creatures[i].Y + creatures[i].height }, new int[] { blocks[nam].X, blocks[nam].X + blocks[nam].width, blocks[nam].Y, blocks[nam].Y + blocks[nam].height }) == true)
                 {
-                    blocks = Òreatures[i].Dead_fall(blocks, i);
+                    creatures[i].Dead_fall();
                 }
             }
         }
 
-        private bool —heck(int[] object_one, int[] object_two)
+        private bool –°heck(int[] object_one, int[] object_two)
         {
             if (object_one[1] > object_two[0] & object_one[2] < object_two[3] & object_one[3] > object_two[2] & object_one[0] < object_two[1])
             {
@@ -1173,19 +1343,42 @@ namespace Mario1
             return -1;
         }
 
-        public void Anim_finish()
+        public void Anim_finish(string variant, int i_block)
         {
-            //TimerSpace ‚ ‰‡ÌÌÓÏ ÏÂÚÓ‰Â ËÒÒÔÓÎ¸ÁÛÂÚÒˇ ÌÂ ÔÓ Ì‡ÁÌ‡˜ÂÌË˛ !!! (˜ÚÓ·˚ ÛÔÓˇ‰Ó˜ËÚ¸ ‰ÂÈÒÚ‚Ëˇ Ë ÌÂ ÒÓÁ‰‡‚‡Ú¸ ‰ÓÔ. ÔÂÂÏÂÌÌÓÈ)
-            if (mario.Y + mario.height < 762) { mario.Y += 3; mario.TimerSpace = true; }
-            else if (mario.TimerSpace) { mario.X += 93; mario.TimerSpace = false; }
-            else
+            if (variant == "Column")
             {
-                if (!mario.TimerRight) mario.TimerRight = true; 
-                Right_Mario();
-                Padenie_Mario();
-                for (int i = 0; i < backgrounds.Count; i++)
+                //TimerSpace –≤ –¥–∞–Ω–Ω–æ–º –º–µ—Ç–æ–¥–µ –∏—Å—Å–ø–æ–ª—å–∑—É–µ—Ç—Å—è –Ω–µ –ø–æ –Ω–∞–∑–Ω–∞—á–µ–Ω–∏—é !!! (—á—Ç–æ–±—ã —É–ø–æ—Ä—è–¥–æ—á–∏—Ç—å –¥–µ–π—Å—Ç–≤–∏—è –∏ –Ω–µ —Å–æ–∑–¥–∞–≤–∞—Ç—å –¥–æ–ø. –ø–µ—Ä–µ–º–µ–Ω–Ω–æ–π)
+                //run_animation –≤ –¥–∞–Ω–Ω–æ–º –º–µ—Ç–æ–¥–µ –∏—Å—Å–ø–æ–ª—å–∑—É–µ—Ç—Å—è –Ω–µ –ø–æ –Ω–∞–∑–Ω–∞—á–µ–Ω–∏—é!!!(—á—Ç–æ–±—ã —É–ø–æ—Ä—è–¥–æ—á–∏—Ç—å –¥–µ–π—Å—Ç–≤–∏—è –∏ –Ω–µ —Å–æ–∑–¥–∞–≤–∞—Ç—å –¥–æ–ø.–ø–µ—Ä–µ–º–µ–Ω–Ω–æ–π)
+                if (mario.Y + mario.height < 762) { mario.Y += 3; mario.TimerSpace = true; }
+                else if (mario.TimerSpace)
                 {
-                    if (backgrounds[i].name == "Finish" & mario.X >= backgrounds[i].X + 100) AnimationManager._currentFrame = AnimationManager._maxFrames;
+                    mario.X += 93;
+                    mario.TimerSpace = false;
+                    mario.direction = false;
+                    mario.Defines_the_image("Jump");
+                    mario.direction = true;
+                    mario.run_animation = 30;
+                }
+                else if (mario.run_animation > 15 & !mario.TimerRight) mario.run_animation--;
+                else if (mario.run_animation > 0 & !mario.TimerRight) { mario.run_animation--; mario.Defines_the_image("Mario/Super Mario/Fiery Mario"); }
+                else
+                {
+                    if (!mario.TimerRight) { mario.TimerRight = true; mario.speed = 2; }
+                    Right_Mario(true);
+                    Padenie_Mario();
+                    for (int i = 0; i < backgrounds.Count; i++)
+                    {
+                        if (backgrounds[i].name == "Finish" & mario.X >= backgrounds[i].X + 100) AnimationManager._currentFrame = AnimationManager._maxFrames;
+                    }
+                }
+            }
+            else if (variant == "90Pipe_input")
+            {
+                if (mario.X < blocks[i_block].X + blocks[i_block].height)
+                {
+                    if (mario.Y > blocks[i_block].Y + blocks[i_block].height - mario.height - 18)
+                        mario.Y--;
+                    Right_Mario(true);
                 }
             }
         }
@@ -1209,12 +1402,12 @@ namespace Mario1
                                     i--;
                                 }
                             }
-                            Òreatures = new List<Creature>();
+                            creatures = new List<Creature>();
                             blocks = new List<Block>();
                             backgrounds = new List<Background>();
                             mario.nam = new List<int>();
                             spawn = (int)location_object[1] - 200;
-                            mario.block_we_stand = -1;
+                            mario.we_stand = -1;
                             mario.X = (int)location_object[1] - spawn + (int)location_object[5] / 2 - mario.width / 2;
                             mario.Y = (int)location_object[2];
                             mario.direction = true;
@@ -1233,25 +1426,24 @@ namespace Mario1
                             mario.speed = 1;
                             Spawn_Load();
                             AnimationManager.PlayAnimation(
-                                durationMs: 800,      // 0.8 ÒÂÍÛÌ‰˚
+                                durationMs: 800,      // 0.8 —Å–µ–∫—É–Ω–¥—ã
                                 intervalMs: 5,
                                 onFrame: frame =>
                                 {
-                                    // ÀÓ„ËÍ‡ ‡ÌËÏ‡ˆËË (Í‡Ê‰˚È ÚËÍ Ú‡ÈÏÂ‡)
+                                    // –õ–æ–≥–∏–∫–∞ –∞–Ω–∏–º–∞—Ü–∏–∏ (–∫–∞–∂–¥—ã–π —Ç–∏–∫ —Ç–∞–π–º–µ—Ä–∞)
                                     if (frame < mario.height / 2 + mario.height % 2)
                                     {
-                                        mario.Y -= 2; // œÓ‰·‡Ò˚‚‡ÂÏ ‚‚Âı
+                                        mario.Y -= 2; // –ü–æ–¥–±—Ä–∞—Å—ã–≤–∞–µ–º –≤–≤–µ—Ä—Ö
                                     }
                                     else 
                                     {
-                                        mario.stopForm1_KeyDown = false; // –‡Á·ÎÓÍËÛÂÏ ‚‚Ó‰
-                                        mario.TimerGravity = true;
-                                        AnimationManager.IsAnimating = false;
+                                        AnimationManager._currentFrame = AnimationManager._maxFrames;
                                     }
                                 },
                                 onComplete: () =>
                                 {
-                                    
+                                    mario.stopForm1_KeyDown = false; // –†–∞–∑–±–ª–æ–∫–∏—Ä—É–µ–º –≤–≤–æ–¥
+                                    mario.TimerGravity = true;
                                 }
                             );
                         }
@@ -1268,11 +1460,11 @@ namespace Mario1
             bool navigator_breack = nav.navigator_breack;
             nav = new Navigator() { current_location = current_location, current_level = current_level, navigator_breack = navigator_breack };
             spawn = 0;
-            Òreatures = new List<Creature>();
+            creatures = new List<Creature>();
             blocks = new List<Block>();
             backgrounds = new List<Background>();
             mario.nam = new List<int>();
-            mario.block_we_stand = -1;
+            mario.we_stand = -1;
             mario.X = 83;
             mario.Y = 845 - 166;
             mario.direction = true;
@@ -1291,25 +1483,24 @@ namespace Mario1
             mario.top = 3000;
             Spawn_Load();
             AnimationManager.PlayAnimation(
-                                durationMs: 800,      // 0.8 ÒÂÍÛÌ‰˚
+                                durationMs: 800,
                                 intervalMs: 5,
                                 onFrame: frame =>
                                 {
-                                    // ÀÓ„ËÍ‡ ‡ÌËÏ‡ˆËË (Í‡Ê‰˚È ÚËÍ Ú‡ÈÏÂ‡)
+                                    // –õ–æ–≥–∏–∫–∞ –∞–Ω–∏–º–∞—Ü–∏–∏ (–∫–∞–∂–¥—ã–π —Ç–∏–∫ —Ç–∞–π–º–µ—Ä–∞)
                                     if (frame < mario.height / 2 + mario.height % 2)
                                     {
-                                        mario.Y -= 2; // œÓ‰·‡Ò˚‚‡ÂÏ ‚‚Âı
+                                        mario.Y -= 2; // –ü–æ–¥–±—Ä–∞—Å—ã–≤–∞–µ–º –≤–≤–µ—Ä—Ö
                                     }
                                     else
                                     {
-                                        mario.stopForm1_KeyDown = false; // –‡Á·ÎÓÍËÛÂÏ ‚‚Ó‰
-                                        mario.TimerGravity = true;
-                                        AnimationManager.IsAnimating = false;
+                                        AnimationManager._currentFrame = AnimationManager._maxFrames;
                                     }
                                 },
                                 onComplete: () =>
                                 {
-                                    
+                                    mario.stopForm1_KeyDown = false; // –†–∞–∑–±–ª–æ–∫–∏—Ä—É–µ–º –≤–≤–æ–¥
+                                    mario.TimerGravity = true;
                                 }
                             );
         }
@@ -1317,15 +1508,17 @@ namespace Mario1
         private void Dead_mario_restart()
         {
             spawn = 0;
-            Òreatures = new List<Creature>();
+            creatures = new List<Creature>();
             blocks = new List<Block>();
             backgrounds = new List<Background>();
             mario.nam = new List<int>();
             int level = nav.current_level;
             nav = new Navigator();
-            if (lives != 0)
+            if (lives > 0)
             {
-                mario = new Mario(0, 700, nav.base_height_ordinary("ordinary"), nav.base_width_ordinary);
+                int coin = mario.coin;
+                mario = new Mario(100, 595, nav.base_height_ordinary("ordinary"), nav.base_width_ordinary);
+                mario.coin = coin;
                 lives -= 1;
                 nav.current_location = level;
                 nav.current_level = level;
@@ -1338,7 +1531,21 @@ namespace Mario1
         {
             mario = null;
             gameTimer.Stop();
-            Menu();
+            BackColor = Color.Black;
+            BackgroundImage = Properties.Resources.gameover;
+            BackgroundImageLayout = ImageLayout.Center;
+            AnimationManager.PlayAnimation(
+                                durationMs: 800,
+                                intervalMs: 5,
+                                onFrame: frame =>
+                                {
+                                },
+                                onComplete: () =>
+                                {
+                                    BackgroundImage = null;
+                                    Menu();
+                                }
+                            );
         }
 
         private void Spawn_Load()
@@ -1361,7 +1568,7 @@ namespace Mario1
                     case "Creature":
                         if ((int)location_object[1] <= spawn + screenWidth)
                         {
-                            Òreatures.Add(new Creature(x: (int)location_object[1] - spawn, y: (int)location_object[2], image: (Image)location_object[3], direction: (bool)location_object[4], name: (string)location_object[5], width: (int)location_object[6], height: (int)location_object[7], condition: (string)location_object[8], property: (string)location_object[9], g: (int)location_object[10], spaceG: (int)location_object[11], top: (int)location_object[12]));
+                            creatures.Add(new Creature(x: (int)location_object[1] - spawn, y: (int)location_object[2], image: (Image)location_object[3], direction: (bool)location_object[4], name: (string)location_object[5], width: (int)location_object[6], height: (int)location_object[7], condition: (List<string>)location_object[8], property: (string)location_object[9], g: (int)location_object[10], spaceG: (int)location_object[11], top: (int)location_object[12]));
                         }
                         else if (nav.navigator_breack == true) { nav.navigator_breack = false; exit = true; }
                         break;

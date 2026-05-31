@@ -118,17 +118,14 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="start" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\start.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="small dark green bushes" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\small dark green bushes.gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Fiery Mario - Walk1 invert" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\gif mario\Fiery Mario - Walk1 invert.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="SMB_greenkoopatroopa2" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\SMB_greenkoopatroopa2.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Fiery Mario - Walk1" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\gif mario\Fiery Mario - Walk1.gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="SMB_Greenshell (1)1" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\SMB_Greenshell (1)1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -154,11 +151,14 @@
   <data name="Super Mario - Walk1" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\gif mario\Super Mario - Walk1.gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="SMB_greenparatrooper" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\SMB_greenparatrooper.gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="Mario - Skid invert" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Mario - Skid invert.gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="SMB_greenparatrooper2" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\SMB_greenparatrooper2.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Mario - Walk1 invert" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\gif mario\Mario - Walk1 invert.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Goomba" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Goomba1.gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -166,8 +166,8 @@
   <data name="Question Block (1)" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Question Block (1).gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="Mario - Walk1" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\gif mario\Mario - Walk1.gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="1light green bushes" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\1light green bushes.gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Mario - Walk3" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\gif mario\Mario - Walk3.gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -175,8 +175,8 @@
   <data name="bg1" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\bg1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="Mario - Skid invert" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Mario - Skid invert.gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="Mario - Walk1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\gif mario\Mario - Walk1.gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Fiery Mario - Jump" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\gif mario\Fiery Mario - Jump.gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -205,9 +205,6 @@
   <data name="SMB_greenkoopatroopa2 invert" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\SMB_greenkoopatroopa2 invert.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="finish_column" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\finish_column.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="Mario - Jump invert" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\gif mario\Mario - Jump invert.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -217,8 +214,8 @@
   <data name="bg4" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\bg4.crdownload;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="Fiery Mario invert" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\gif mario\Fiery Mario invert.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="Mario invert" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\gif mario\Mario invert.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="SMB_Greenshell (1)" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\SMB_Greenshell (1).png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -226,8 +223,8 @@
   <data name="Super Mario - Duck invert" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\gif mario\Super Mario - Duck invert.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="Fiery Mario - Walk2" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\gif mario\Fiery Mario - Walk2.gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="finish_column1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\finish_column1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="overworld" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\overworld.crdownload;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -238,17 +235,29 @@
   <data name="Super Mario invert" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\gif mario\Super Mario invert.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="Mario - Walk3 invert" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\gif mario\Mario - Walk3 invert.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="1clouds" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\1clouds.gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Super Mario - Jump" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\gif mario\Super Mario - Jump.gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="num_2" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\num_2.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="EmptyBlock" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\EmptyBlock.gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="SMB_greenkoopatroopa" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\SMB_greenkoopatroopa.gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="num_7" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\num_7.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="num_5" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\num_5.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Super Mario - Skid invert" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Super Mario - Skid invert.gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="num_8" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\num_8.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Super Mushroom" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Super Mushroom.gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -258,6 +267,9 @@
   </data>
   <data name="Pipe" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Pipe.gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Mario2" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\gif mario\Mario.gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="finish" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\finish.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -271,8 +283,11 @@
   <data name="Starman" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Starman.gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="overworld_bg.png" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\overworld_bg.png.crdownload;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="Super Mario - Walk2 invert" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\gif mario\Super Mario - Walk2 invert.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="num_0" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\num_0.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Coin" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Coin.gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -280,35 +295,50 @@
   <data name="Goomba - Grey - Stomp" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Goomba - Grey - Stomp.gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="Super Mario - Walk2 invert" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\gif mario\Super Mario - Walk2 invert.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="SMB_greenparatrooper2 invert" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\SMB_greenparatrooper2 invert.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Mario" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Mario.gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="start" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\start.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="Super Mario - Duck" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\gif mario\Super Mario - Duck.gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Mario2" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\gif mario\Mario.gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Fiery Mario - Skid invert" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Fiery Mario - Skid invert.gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="3light green bushes" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\3light green bushes.gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Super Mario - Walk3 invert" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\gif mario\Super Mario - Walk3 invert.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="Fire Flower (1)" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Fire Flower (1).gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="num_1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\num_1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="6c764e68cbc2879d876e9b515015f1c2 (1)" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\6c764e68cbc2879d876e9b515015f1c2 (1).jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="SMB_greenparatrooper" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\SMB_greenparatrooper.gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="bgg" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\bgg.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="Mario - Walk2 invert" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\gif mario\Mario - Walk2 invert.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="Mario1" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\gif mario\Mario.gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="90pipe (2) (1)" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\90pipe (2) (1).gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="finish_column" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\finish_column.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Super Mario" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\gif mario\Super Mario.gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -322,11 +352,17 @@
   <data name="Super Mario - Walk2" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\gif mario\Super Mario - Walk2.gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="Mario invert" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\gif mario\Mario invert.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="Fiery Mario invert" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\gif mario\Fiery Mario invert.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="Super Mario - Walk3 invert" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\gif mario\Super Mario - Walk3 invert.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="Mario - Walk3 invert" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\gif mario\Mario - Walk3 invert.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Fiery Mario - Walk2" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\gif mario\Fiery Mario - Walk2.gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="gameover" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\gameover.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Fiery Mario - Duck invert" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\gif mario\Fiery Mario - Duck invert.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -334,11 +370,23 @@
   <data name="Fiery Mario - Fireball" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\gif mario\Fiery Mario - Fireball.gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="num_4" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\num_4.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="Fiery Mario - Skid" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Fiery Mario - Skid.gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="overworld_bg.png" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\overworld_bg.png.crdownload;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="Fiery Mario - Duck" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\gif mario\Fiery Mario - Duck.gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="90pipe" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\90pipe.gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="large dark green bushes" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\large dark green bushes.gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="finish1" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\finish1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -352,11 +400,23 @@
   <data name="Mario - Skid" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Mario - Skid.gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="Pipe1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pipe.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="num_6" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\num_6.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Mario1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\gif mario\Mario.gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="Fiery Mario - Walk3" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\gif mario\Fiery Mario - Walk3.gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="finish_column1" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\finish_column1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="moving platform" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\moving platform.gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="num_3" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\num_3.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="bg" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\bg.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -364,19 +424,28 @@
   <data name="Question Block" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Question Block.gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="Super Mario - Skid invert" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Super Mario - Skid invert.gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="Fiery Mario - Walk1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\gif mario\Fiery Mario - Walk1.gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="Mario - Walk1 invert" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\gif mario\Mario - Walk1 invert.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="3clouds" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\3clouds.gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="num_9" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\num_9.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="90pipe (2)" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\90pipe (2).gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="SMB_greenparatrooper1 invert" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\SMB_greenparatrooper1 invert.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="Pipe1" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Pipe.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="90pipe (1)" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\90pipe (1).gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="bgg" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\bgg.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="SMB_greenkoopatroopa" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\SMB_greenkoopatroopa.gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="iron_monolit" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\iron_monolit.gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

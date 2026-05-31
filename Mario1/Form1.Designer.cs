@@ -42,6 +42,7 @@
             StartPosition = FormStartPosition.WindowsDefaultBounds;
             Text = "Form1";
             WindowState = FormWindowState.Maximized;
+            FormClosing += Form1_FormClosing;
             Load += Form1_Load;
             Paint += Form1_Paint;
             KeyDown += Form1_KeyDown;

@@ -1,4 +1,4 @@
-﻿namespace Mario1
+﻿namespace Mario1.GameObject.Gameobject
 {
     using im_gl = Properties.Resources;// im_gl = images_global все картинки проекта
     public class Mario : GameObject
@@ -11,11 +11,12 @@
             this.width = width;
             image = im_gl.Mario;
             direction = true;
-            block_we_stand = -1;
+            we_stand = -1;
             nam = new List<int>();
             run_animation = 0;
             runIf = 0;
             speed = 1;
+            top = 3000;
         }
 
         public bool TimerRight = false;
@@ -26,6 +27,7 @@
         public bool stopForm1_KeyDown = false;
         public bool deadPadeniye = false;
         public int coin = 0;
+        public int coin_max = 30;
 
         public List<int> nam;
         /*

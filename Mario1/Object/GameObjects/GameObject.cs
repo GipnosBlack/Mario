@@ -1,6 +1,6 @@
-﻿namespace Mario1
+﻿namespace Mario1.GameObject
 {
-    public class GameObject
+    public abstract class GameObject
     {
         public int X { get; set; }
         public int Y { get; set; }
@@ -10,7 +10,7 @@
         public int width { get; set; }
         public bool direction { get; set; } //true - направо, false - налево
         public string property { get; set; }
-        public int block_we_stand { get; set; }
+        public int we_stand { get; set; }
         public int location_transfer { get; set; }
         public short speed { get; set; }
         public short run_animation { get; set; }//для картинок бега (прибавляеться каждый цикл таймера и обнуляеться при остановке)

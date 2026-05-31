@@ -2,7 +2,6 @@ namespace Mario1
 {
     public static class Program
     {
-        public static Mario mario;
         /// <summary>
         ///  The main entry point for the application.
         /// </summary>

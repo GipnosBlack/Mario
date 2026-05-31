@@ -1,10 +1,10 @@
-﻿namespace Mario1
+﻿namespace Mario1.GameObject.Gameobject.Creature
 {
-    using im_gl = Properties.Resources;// im_gl = images_global все картинки проект
+    using im_gl = Properties.Resources;// im_gl = images_global все картинки проекта
 
     public class Creature : GameObject
     {
-        public Creature(int x, int y, string name, int height, int width, Image image, bool direction, string property, int top, int g, int spaceG, string condition)
+        public Creature(int x, int y, string name, int height, int width, Image image, bool direction, string property, int top, int g, int spaceG, List<string> condition)
         {
             X = x;
             Y = y;
@@ -16,37 +16,56 @@
             this.top = top;
             this.g = g;
             this.spaceG = spaceG;
-            this.condition = new List<string>() { condition };
+            spaceG_const = spaceG;
+            for (int i = 0; i < condition.Count; i++)
+            {
+                if(i==0) State = ParseCondition(condition[i]);
+                else State |= ParseCondition(condition[i]);
+            }
             this.image = image;
             run_animation = 0;
             runIf = 0;
             speed = 5;
+            we_stand = -1;
         }
-        public Creature(int x, int y, string name, int height, int width, Image image, bool direction, string property, int top, int g, int spaceG, string condition, int proper_height) : this( x,  y,  name,  height,  width,  image,  direction,  property,  top,  g,  spaceG,  condition)
+        public Creature(int x, int y, string name, int height, int width, Image image, bool direction, string property, int top, int g, int spaceG, List<string> condition, int proper_height) : this( x,  y,  name,  height,  width,  image,  direction,  property,  top,  g,  spaceG, condition)
         {
             this.proper_height = proper_height;
         }
         public int top;
         public int g;
         public int spaceG;
-        public List<string> condition;
-        public int proper_height;
+        public int spaceG_const;
+        public CreatureState State;
+        public int proper_height;//сколькло будет лететь вверх coin с State(CoinUp), чтобы потом удалиться
 
-        public List<Block> Check_block_we_stand(List<Block> blocks, int creatures_i, string sposob)
+        public bool TimerGravity = true;
+
+        private static CreatureState ParseCondition(string cond) => cond switch
         {
-            for (int r = 0; r < blocks.Count; r++)
-            {
-                blocks[r].Delete_block_we_stand(creatures_i, sposob);
-            }
-            return blocks;
+            "stands" => CreatureState.Stands,
+            "dead_fall" => CreatureState.DeadFall,
+            "intangible" => CreatureState.Intangible,
+            "attack_on_everyone" => CreatureState.AttackOnEveryone,
+            "waiting_for_Mario_to_exit_to_kill" => CreatureState.WaitingForMario,
+            "jump" => CreatureState.Jump,
+            "doesn_t_kill" => CreatureState.DoesntKill,
+            "coin_up" => CreatureState.CoinUp,
+            _ => CreatureState.None
+        };
+
+        public void Delete_сreature_we_stand(int i)
+        {
+            if (we_stand == i) we_stand = -1;
+            else if (we_stand > i) we_stand -= 1;
         }
-        public List<Block> Dead_fall(List<Block> blocks, int creatures_i)
+
+        public void Dead_fall()
         {
-            condition.Add("intangible");
+            State |= CreatureState.DeadFall | CreatureState.Intangible;
             g = 1;
+            TimerGravity = true;
             top = 1500;
-            condition.Add("dead_fall");
-            return  Check_block_we_stand(blocks, creatures_i, "");
         }
 
         public Rectangle DestRect()

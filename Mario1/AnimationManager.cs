@@ -24,6 +24,13 @@ namespace Mario1
             };
         }
 
+        // Очистка
+        public static void Clean()
+        {
+            _animTimer?.Stop();
+            _animTimer?.Dispose();
+        }
+
         /// <param name="durationMs">Общая длительность в мс</param>
         /// <param name="intervalMs">Частота обновления кадров (20-30 мс для плавности)</param>
         /// <param name="onFrame">Логика кадра (принимает номер текущего кадра)</param>

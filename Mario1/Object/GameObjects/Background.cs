@@ -1,4 +1,4 @@
-﻿namespace Mario1
+﻿namespace Mario1.GameObject.Gameobject
 {
     public class Background : GameObject
     {
